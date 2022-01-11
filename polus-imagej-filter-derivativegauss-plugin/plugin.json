@@ -1,0 +1,87 @@
+{
+  "name": "ImageJ filter derivativeGauss",
+  "version": "0.3.0",
+  "title": "ImageJ filter derivativeGauss",
+  "description": "Performs the 2-D partial derivative Gaussian kernel convolutions on an image at a particular point.",
+  "author": "Benjamin Houghton (benjamin.houghton@axleinfo.com)",
+  "institution": "National Center for Advancing Translational Sciences, National Institutes of Health",
+  "repository": "https://github.com/labshare/polus-plugins",
+  "website": "https://ncats.nih.gov/preclinical/core/informatics",
+  "citation": "",
+  "containerId": "polusai/imagej-filter-derivativegauss-plugin:0.3.0",
+  "inputs": [
+    {
+      "name": "opName",
+      "type": "enum",
+      "options": {
+        "values": ["DefaultDerivativeGauss"]
+      },
+      "description": "Op overloading method to perform",
+      "required": false
+    },
+    {
+      "name": "inpDir",
+      "type": "collection",
+      "description": "Collection to be processed by this plugin",
+      "required": false
+    },
+    {
+      "name": "n",
+      "type": "array",
+      "description": "An array of numbers specifying the nth partial derivatives to compute",
+      "required": false,
+      "options":{
+        "items": {
+          "type": "string",
+          "title": "An array of numbers specifying the nth partial derivatives to compute",
+          "widget": "string"
+        }
+      }
+    },
+    {
+      "name": "sigma",
+      "type": "array",
+      "description": "Standard deviation of the partial derivative Gaussian kernel",
+      "required": false,
+      "options":{
+        "items": {
+          "type": "string",
+          "title": "Standard deviation of the partial derivative Gaussian kernel",
+          "widget": "string"
+        }
+      }
+    }
+  ],
+  "outputs": [
+    {
+      "name": "outDir",
+      "type": "collection",
+      "description": "Output collection"
+    }
+  ],
+  "ui": [
+    {
+      "key": "inputs.opName",
+      "title": "opName",
+      "description": "Op overloading method to perform"
+    },
+    {
+      "key": "inputs.inpDir",
+      "title": "inpDir",
+      "description": "Collection to be processed by this plugin",
+      "condition": "model.inputs.opName==DefaultDerivativeGauss"
+    },
+    {
+      "key": "inputs.n",
+      "title": "n",
+      "description": "An array of numbers specifying the nth partial derivatives to compute",
+      "condition": "model.inputs.opName==DefaultDerivativeGauss"
+    },
+    {
+      "key": "inputs.sigma",
+      "title": "sigma",
+      "description": "Standard deviation of the partial derivative Gaussian kernel",
+      "condition": "model.inputs.opName==DefaultDerivativeGauss"
+    }
+  ]
+}
