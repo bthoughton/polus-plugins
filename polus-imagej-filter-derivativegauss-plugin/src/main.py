@@ -140,9 +140,22 @@ def main(
             if _sigma is not None:
                 sigma = ij_converter.to_java(ij, _sigma, sigma_types[_opName], dtype)
 
+            
+            # TEST HERE HOW TO PASS OUT AS INPUT
+            image_size = 2048
+            image_shape = (image_size, image_size)
+            outin = np.random.randint(
+                low=0, high=255, size=image_shape, dtype=np.uint16
+            )
+            
+            outin = np.double(outin)
+            outin = ij_converter.to_java(ij, outin, 'IterableInterval')
+            #### END TEST
+            
+            
             logger.info("Running op...")
             if _opName == "DefaultDerivativeGauss":
-                out = ij.op().filter().derivativeGauss(in1, in2, sigma)
+                out = ij.op().filter().derivativeGauss(outin, in1, in2, sigma)
 
             logger.info("Completed op!")
             if in1_path != None:

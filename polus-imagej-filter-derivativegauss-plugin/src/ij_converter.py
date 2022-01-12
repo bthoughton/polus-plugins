@@ -40,12 +40,27 @@ SCALARS = [
     "boolean",
 ]
 
+FLOAT_SCALARS = [
+    "double",
+    "float",
+    "long",  # long type (int64) not supported by bfio
+]
+
+INT_SCALARS = [
+    "int",
+    "short",
+    "char",
+    "byte",
+    "boolean",
+]
+
 ## recognize array objects as scalar objects + '[]'
-ARRAYS = [s + "[]" for s in SCALARS]
+FLOAT_ARRAYS = [s + "[]" for s in FLOAT_SCALARS]
+INT_ARRAYS = [s + "[]" for s in INT_SCALARS]
 
 
 def _java_setup():
-    global IMGLYB_PRIMITIVES, PRIMITIVES, PRIMITIVE_ARRAYS
+    global IMGLYB_PRIMITIVES, PRIMITIVES, PRIMITIVE_FLOAT_ARRAYS, PRIMITIVE_INT_ARRAYS
     IMGLYB_PRIMITIVES = {
         "float32": imglyb.types.FloatType,
         "float64": imglyb.types.DoubleType,
@@ -78,17 +93,18 @@ def _java_setup():
         "byte": jpype.JByte,
         "boolean": jpype.JBoolean,
     }
-    PRIMITIVE_ARRAYS = {
+    PRIMITIVE_FLOAT_ARRAYS = {
         "double[]": jpype.JDouble[:],
         "float[]": jpype.JFloat[:],
         "long[]": jpype.JLong[:],
+    }
+    PRIMITIVE_INT_ARRAYS = {
         "int[]": jpype.JInt[:],
         "short[]": jpype.JShort[:],
-        "char[]": jpype.JChar[:],
         "byte[]": jpype.JByte[:],
+        "char[]": jpype.JChar[:],
         "boolean[]": jpype.JBoolean[:],
     }
-
 
 scyjava.when_jvm_starts(_java_setup)
 
@@ -103,8 +119,14 @@ JAVA_CONVERT.update(
 JAVA_CONVERT.update({t: lambda s, t, st: PRIMITIVES[t](float(s)) for t in SCALARS})
 JAVA_CONVERT.update(
     {
-        t: lambda s, t, st: PRIMITIVE_ARRAYS[t]([float(si) for si in s.split(",")])
-        for t in ARRAYS
+        t: lambda s, t, st: PRIMITIVE_FLOAT_ARRAYS[t]([float(si) for si in s.split(",")])
+        for t in FLOAT_ARRAYS
+    }
+)
+JAVA_CONVERT.update(
+    {
+        t: lambda s, t, st: PRIMITIVE_INT_ARRAYS[t]([int(si) for si in s.split(",")])
+        for t in INT_ARRAYS
     }
 )
 # JAVA_CONVERT.update({
@@ -126,7 +148,10 @@ def to_java(ij, np_array, java_type, java_dtype=None):
         raise ValueError("No imagej instance found.")
 
     if isinstance(np_array, type(None)):
-        return None
+        return jpype.JObject(None, type)
+    
+    #if java_type == "null":
+    #    return jpype.JObject(None, type)
 
     if java_type in JAVA_CONVERT.keys():
         if str(java_dtype) != "None":
