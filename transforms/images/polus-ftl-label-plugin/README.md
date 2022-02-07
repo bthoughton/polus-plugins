@@ -54,11 +54,12 @@ Paste the contents of `plugin.json` into the pop-up window and submit.
 
 This plugin takes one input argument and one output argument:
 
-| Name             | Description                                           | I/O    | Type       |
-|------------------|-------------------------------------------------------|--------|------------|
-| `--inpDir`       | Input image collection to be processed by this plugin | Input  | collection |
-| `--connectivity` | City block connectivity                               | Input  | number     |
-| `--outDir`       | Output collection                                     | Output | collection |
+| Name                      | Description                                                   | I/O    | Type       | Default |
+|---------------------------|---------------------------------------------------------------|--------|------------|---------|
+| `--inpDir`                | Input image collection to be processed by this plugin         | Input  | collection | N/A     |
+| `--connectivity`          | City block connectivity                                       | Input  | number     | 1       |
+| `--binarizationThreshold` | Pixel values greater than this will be set to 1, otherwise 0. | Input  | number     | 0       |
+| `--outDir`                | Output collection                                             | Output | collection | N/A     |
 
 ## Example Code
 ```Linux

@@ -20,13 +20,13 @@
             "name": "connectivity",
             "type": "number",
             "description": "City block connectivity",
-            "required": true
+            "required": false
         },
         {
             "name": "binarizationThreshold",
             "type": "number",
             "description": "Pixel values greater than this will be set to 1, otherwise 0.",
-            "required": true
+            "required": false
         }
     ],
     "outputs": [
@@ -45,7 +45,14 @@
         {
             "key": "inputs.connectivity",
             "title": "Connectivity",
-            "description": "City block connectivity"
+            "description": "City block connectivity",
+            "default": 1
+        },
+        {
+            "key": "inputs.binarizationThreshold",
+            "title": "Binarization Threshold",
+            "description": "Pixel values greater than this will be set to 1, otherwise 0.",
+            "default": 0
         }
     ]
 }
