@@ -63,39 +63,50 @@ def filter_by_size(file_paths: List[Path], size_threshold: int) -> Tuple[List[Pa
     return small_files, large_files
 
 
-def label_cython(input_path: Path, output_path: Path, connectivity: int):
+def label_cython(
+        input_path: Path,
+        output_path: Path,
+        connectivity: int,
+        binarization_threshold: float,
+):
     """ Label the input image and writes labels back out.
 
     Args:
         input_path: Path to input image.
         output_path: Path for output image.
         connectivity: Connectivity kind.
+        binarization_threshold: Pixel values greater than this will be set to 1, otherwise 0..
     """
     with ProcessManager.thread() as active_threads:
         with BioReader(
             input_path,
             max_workers=active_threads.count,
         ) as reader:
+            ndim = sum((s > 1 for s in reader.shape))
+
+            if connectivity > ndim:
+                ProcessManager.log(
+                    f'{input_path.name}: Connectivity is not less than or equal to the number of image dimensions, '
+                    f'skipping this image. connectivity={connectivity}, ndim={ndim}'
+                )
+                return
 
             with BioWriter(
                 output_path,
                 max_workers=active_threads.count,
                 metadata=reader.metadata,
             ) as writer:
+
                 # Load an image and convert to binary
                 image = numpy.squeeze(reader[..., 0, 0])
+                image = (image > binarization_threshold)
 
                 if not numpy.any(image):
+                    ProcessManager.log(
+                        f'{input_path.name}: Did not find any labelled pixels. Setting output to zeros.'
+                    )
                     writer.dtype = numpy.uint8
                     writer[:] = numpy.zeros_like(image, dtype=numpy.uint8)
-                    return
-
-                image = (image > 0)
-                if connectivity > image.ndim:
-                    ProcessManager.log(
-                        f'{input_path.name}: Connectivity is not less than or equal to the number of image dimensions, '
-                        f'skipping this image. connectivity={connectivity}, ndim={image.ndim}'
-                    )
                     return
 
                 # Run the labeling algorithm
@@ -121,8 +132,13 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
-        '--connectivity', dest='connectivity', type=str, required=True,
-        help='City block connectivity, must be less than or equal to the number of dimensions',
+        '--connectivity', dest='connectivity', type=str, required=False, default=1,
+        help='City block connectivity, must be less than or equal to the number of dimensions.',
+    )
+
+    parser.add_argument(
+        '--binarizationThreshold', dest='binarizationThreshold', type=str, required=False, default=0,
+        help='Pixel values greater than this will be set to 1, otherwise 0.',
     )
 
     parser.add_argument(
@@ -133,14 +149,17 @@ if __name__ == "__main__":
     # Parse the arguments
     args = parser.parse_args()
 
-    _connectivity = int(args.connectivity)
-    logger.info(f'connectivity = {_connectivity}')
-
     _input_dir = Path(args.inpDir).resolve()
     assert _input_dir.exists(), f'{_input_dir } does not exist.'
     if _input_dir.joinpath('images').is_dir():
         _input_dir = _input_dir.joinpath('images')
     logger.info(f'inpDir = {_input_dir}')
+
+    _connectivity = int(args.connectivity)
+    logger.info(f'connectivity = {_connectivity}')
+
+    _binarization_threshold = float(args.binarizationThreshold)
+    logger.info(f'binarizationThreshold = {_binarization_threshold}')
 
     _output_dir = Path(args.outDir).resolve()
     assert _output_dir.exists(), f'{_output_dir } does not exist.'
@@ -168,10 +187,11 @@ if __name__ == "__main__":
                 _infile,
                 _output_dir.joinpath(get_output_name(_infile.name)),
                 _connectivity,
+                _binarization_threshold,
             )
         ProcessManager.join_threads()
 
     if _large_files:
         for _infile in _large_files:
             _outfile = _output_dir.joinpath(get_output_name(_infile.name))
-            PolygonSet(_connectivity).read_from(_infile).write_to(_outfile)
+            PolygonSet(_connectivity, _binarization_threshold).read_from(_infile).write_to(_outfile)
