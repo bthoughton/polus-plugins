@@ -1,4 +1,4 @@
 #!/bin/bash
 
 version=$(<VERSION)
-docker build . -t labshare/polus-imagej-convert-float32-plugin:${version}
+docker build . -t polusai/imagej-convert-float32-plugin:${version}

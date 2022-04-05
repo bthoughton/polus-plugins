@@ -3,7 +3,7 @@
   "version": "0.4.0",
   "title": "ImageJ convert float32",
   "description": "Converts the input image to a 32 bit float",
-  "author": "Benjamin Houghton (benjamin.houghton@axleinfo.com)",
+  "author": "Nick Schaub (nick.schaub@nih.gov), Anjali Taneja and Benjamin Houghton (benjamin.houghton@axleinfo.com)",
   "institution": "National Center for Advancing Translational Sciences, National Institutes of Health",
   "repository": "https://github.com/labshare/polus-plugins",
   "website": "https://ncats.nih.gov/preclinical/core/informatics",
@@ -17,13 +17,13 @@
         "values": ["ConvertImages$Float32"]
       },
       "description": "Operation to perform",
-      "required": false
+      "required": true
     },
     {
       "name": "inpDir",
       "type": "collection",
       "description": "Collection to be processed by this plugin",
-      "required": false
+      "required": true
     }
   ],
   "outputs": [
@@ -42,8 +42,7 @@
     {
       "key": "inputs.inpDir",
       "title": "inpDir",
-      "description": "Collection to be processed by this plugin",
-      "condition": "model.inputs.opName==ConvertImages$Float32"
+      "description": "Collection to be processed by this plugin"
     }
   ]
 }
