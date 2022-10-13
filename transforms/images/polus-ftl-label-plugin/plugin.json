@@ -8,7 +8,7 @@
     "repository": "https://github.com/labshare/polus-plugins",
     "website": "https://ncats.nih.gov/preclinical/core/informatics",
     "citation": "",
-    "containerId": "labshare/polus-ftl-label-plugin:0.3.11",
+    "containerId": "polusai/ftl-label-plugin:0.3.11",
     "inputs": [
         {
             "name": "inpDir",
