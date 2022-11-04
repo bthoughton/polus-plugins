@@ -109,6 +109,11 @@
       "title": "pixelPerMicron",
       "description": "Pixel size in micrometer",
       "default": 1.0
+    },
+    {
+      "key": "inputs.mapVar",
+      "title": "mapVar",
+      "description": "Variable containing image channel information in intensity images for nyxus feature extraction"
     }
   ],
   "validators": null
